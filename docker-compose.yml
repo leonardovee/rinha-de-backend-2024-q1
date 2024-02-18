@@ -1,15 +1,16 @@
 version: '3'
 
 services:
-  api1:
-    image: api
-    hostname: api1
+  api1: &api
     build:
       context: .
+    ports:
+      - "8081:8081"
     depends_on:
       - db
-    expose:
-      - "80"
+    environment:
+      - SERVER_PORT=8081
+      - DATABASE_URL=postgres://postgres:postgres@db/postgres
     deploy:
       resources:
         limits:
@@ -17,24 +18,17 @@ services:
           memory: '50MB'
 
   api2:
-    image: api
-    hostname: api2
-    build:
-      context: .
-    depends_on:
-      - db
-    expose:
-      - "80"
-    deploy:
-      resources:
-        limits:
-          cpus: '0.2'
-          memory: '50MB'
+    <<: *api
+    ports:
+      - "8082:8082"
+    environment:
+      - SERVER_PORT=8082
+      - DATABASE_URL=postgres://postgres:postgres@db/postgres
 
   haproxy:
     container_name: haproxy
     ports:
-      - 9999:80
+      - "9999:9999"
     image: haproxytech/haproxy-alpine
     volumes:
       - ./haproxy.cfg:/etc/haproxy/haproxy.cfg
@@ -49,11 +43,11 @@ services:
 
   db:
     image: postgres
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
@@ -62,3 +56,7 @@ services:
           cpus: '1'
           memory: '400MB'
 
+networks:
+  default:
+    driver: bridge
+    name: rinha-nginx-2024q1

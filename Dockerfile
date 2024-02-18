@@ -12,6 +12,4 @@ RUN apk --no-cache add ca-certificates
 
 COPY --from=builder /app/rinha-de-backend-2024-q1 /usr/local/bin/rinha-de-backend-2024-q1
 
-ENV DATABASE_URL=postgres://postgres:postgres@db/postgres
-
 CMD ["rinha-de-backend-2024-q1"]

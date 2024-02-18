@@ -21,5 +21,6 @@ func main() {
 
 	e := echo.New()
 	api.Setup(e, &api.Handlers{Transactions: transactions.Setup(pool)})
-	e.Logger.Fatal(e.Start(":80"))
+
+	e.Logger.Fatal(e.Start(fmt.Sprintf(":%s", os.Getenv("SERVER_PORT"))))
 }
